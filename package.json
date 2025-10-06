@@ -1,6 +1,4 @@
-
-
-json{
+{
   "name": "biji-terminal",
   "version": "0.1.0",
   "private": true,
