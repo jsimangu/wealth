@@ -49,6 +49,8 @@ const BijiTerminal = () => {
   const [selectedHolding, setSelectedHolding] = useState(null);
   const [showHoldingDetail, setShowHoldingDetail] = useState(false);
   const [showAllHoldings, setShowAllHoldings] = useState(false);
+  const [realTimePrices, setRealTimePrices] = useState({});
+  const [loadingPrices, setLoadingPrices] = useState(false);
   
   // Update time every second
   useEffect(() => {
@@ -56,6 +58,82 @@ const BijiTerminal = () => {
     return () => clearInterval(timer);
   }, []);
 
+  // Fetch real-time prices when client is selected
+useEffect(() => {
+  if (selectedClient && showClientDetail) {
+    fetchRealTimePrices(selectedClient);
+    
+    // Refresh prices every 30 seconds
+    const interval = setInterval(() => {
+      fetchRealTimePrices(selectedClient);
+    }, 30000);
+    
+    return () => clearInterval(interval);
+  }
+}, [selectedClient, showClientDetail]);
+
+// Function to fetch real prices
+const fetchRealTimePrices = async (client) => {
+  setLoadingPrices(true);
+  
+  try {
+    // Collect all tickers from client's holdings
+    const allTickers = [];
+    client.holdings.forEach(holding => {
+      holding.stocks.forEach(stock => {
+        if (!allTickers.includes(stock.ticker)) {
+          allTickers.push(stock.ticker);
+        }
+      });
+    });
+    
+    // Fetch prices
+    const response = await fetch(`/api/batch-prices?tickers=${allTickers.join(',')}`);
+    const data = await response.json();
+    
+    if (data.stocks) {
+      // Create price lookup object
+      const priceMap = {};
+      data.stocks.forEach(stock => {
+        if (stock.price !== null) {
+          priceMap[stock.ticker] = stock;
+        }
+      });
+      setRealTimePrices(priceMap);
+    }
+    
+    setLoadingPrices(false);
+  } catch (error) {
+    console.error('Error fetching real-time prices:', error);
+    setLoadingPrices(false);
+  }
+};
+
+// Function to calculate updated portfolio values with real prices
+const calculateRealTimeValue = (stock) => {
+  if (realTimePrices[stock.ticker]) {
+    const realPrice = realTimePrices[stock.ticker].price;
+    const realValue = stock.shares * realPrice;
+    const realReturn = ((realPrice - stock.price) / stock.price) * 100;
+    
+    return {
+      ...stock,
+      currentPrice: realPrice,
+      currentValue: realValue,
+      currentReturn: stock.return + realReturn,
+      priceChange: realPrice - stock.price,
+      isLive: true
+    };
+  }
+  return {
+    ...stock,
+    currentPrice: stock.price,
+    currentValue: stock.value,
+    currentReturn: stock.return,
+    priceChange: 0,
+    isLive: false
+  };
+};
   // Market data with realistic values
   const marketData = {
     indices: [
@@ -829,9 +907,15 @@ const BijiTerminal = () => {
               <div className="bg-gray-900 border border-gray-800 p-3">
                 <div className="flex items-center justify-between mb-3">
                   <div className="text-orange-400 text-xs font-bold">
-                    PORTFOLIO HOLDINGS
-                    <span className="text-gray-400 text-xs font-normal ml-3">(Click "View" to see detailed positions)</span>
-                  </div>
+  PORTFOLIO HOLDINGS
+  <span className="text-gray-400 text-xs font-normal ml-3">(Click "View" to see detailed positions)</span>
+  {loadingPrices && (
+    <span className="text-yellow-400 text-xs font-normal ml-3">● Updating prices...</span>
+  )}
+  {!loadingPrices && Object.keys(realTimePrices).length > 0 && (
+    <span className="text-green-400 text-xs font-normal ml-3">● Live prices</span>
+  )}
+</div>
                   <button
                     onClick={() => setShowAllHoldings(true)}
                     className="px-4 py-2 bg-orange-600 text-black font-bold text-xs hover:bg-orange-500 transition-colors"
@@ -1159,11 +1243,36 @@ const BijiTerminal = () => {
                       </thead>
                       <tbody>
                         {selectedHolding.stocks.map((stock, idx) => (
-                          <tr key={idx} className="border-b border-gray-800 hover:bg-gray-800 transition-colors">
-                            <td className="py-3 px-2 text-orange-400 font-bold">{stock.ticker}</td>
-                            <td className="py-3 px-2 text-white">{stock.name}</td>
-                            <td className="text-right py-3 px-2 text-gray-300">{stock.shares.toLocaleString()}</td>
-                            <td className="text-right py-3 px-2 text-cyan-400">${stock.price.toFixed(2)}</td>
+                         {selectedHolding.stocks.map((stock, idx) => {
+  const liveStock = calculateRealTimeValue(stock);
+  return (
+    <tr key={idx} className="border-b border-gray-800 hover:bg-gray-800 transition-colors">
+      <td className="py-3 px-2 text-orange-400 font-bold">
+        {liveStock.ticker}
+        {liveStock.isLive && <span className="ml-1 text-green-400 text-xs">●</span>}
+      </td>
+      <td className="py-3 px-2 text-white">{liveStock.name}</td>
+      <td className="text-right py-3 px-2 text-gray-300">{liveStock.shares.toLocaleString()}</td>
+      <td className="text-right py-3 px-2">
+        <div className="flex flex-col items-end">
+          <span className="text-cyan-400 font-bold">${liveStock.currentPrice.toFixed(2)}</span>
+          {liveStock.isLive && liveStock.priceChange !== 0 && (
+            <span className={`text-xs ${liveStock.priceChange >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              {liveStock.priceChange >= 0 ? '+' : ''}{liveStock.priceChange.toFixed(2)}
+            </span>
+          )}
+        </div>
+      </td>
+      <td className="text-right py-3 px-2 text-white font-bold">${liveStock.currentValue.toLocaleString()}</td>
+      <td className="text-right py-3 px-2 text-gray-300">
+        {((liveStock.currentValue / selectedHolding.value) * 100).toFixed(1)}%
+      </td>
+      <td className={`text-right py-3 px-2 font-bold ${liveStock.currentReturn >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+        {liveStock.currentReturn >= 0 ? '+' : ''}{liveStock.currentReturn.toFixed(1)}%
+      </td>
+    </tr>
+  );
+})}
                             <td className="text-right py-3 px-2 text-white font-bold">${stock.value.toLocaleString()}</td>
                             <td className="text-right py-3 px-2 text-gray-300">
                               {((stock.value / selectedHolding.value) * 100).toFixed(1)}%
