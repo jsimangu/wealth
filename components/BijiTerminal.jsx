@@ -51,6 +51,9 @@ const BijiTerminal = () => {
   const [showAllHoldings, setShowAllHoldings] = useState(false);
   const [realTimePrices, setRealTimePrices] = useState({});
   const [loadingPrices, setLoadingPrices] = useState(false);
+  const [dbClients, setDbClients] = useState([]);
+  const [loadingClients, setLoadingClients] = useState(true);
+  const [showAddClientModal, setShowAddClientModal] = useState(false);
   
   // Update time every second
   useEffect(() => {
@@ -154,341 +157,60 @@ const calculateRealTimeValue = (stock) => {
     ]
   };
 
-  const clients = [
-    { 
-      id: 1, 
-      name: 'Johnson, S', 
-      fullName: 'Sarah Johnson',
-      aum: 2500000, 
-      returns: { ytd: 12.4, mtd: 2.1, '1yr': 14.2, '3yr': 28.5 }, 
-      risk: 'Moderate', 
-      status: 'Active', 
-      alerts: 2,
-      email: 'sarah.j@email.com',
-      phone: '(555) 123-4567',
-      since: '2019',
-      holdings: [
-        { 
-          asset: 'US Large Cap Equity', 
-          value: 1050000, 
-          pct: 42, 
-          return: 15.2,
-          stocks: [
-            { ticker: 'AAPL', name: 'Apple Inc.', shares: 1250, price: 178.45, value: 223063, return: 18.2 },
-            { ticker: 'MSFT', name: 'Microsoft Corp.', shares: 850, price: 412.30, value: 350455, return: 22.1 },
-            { ticker: 'GOOGL', name: 'Alphabet Inc.', shares: 950, price: 142.15, value: 135043, return: 14.8 },
-            { ticker: 'AMZN', name: 'Amazon.com Inc.', shares: 780, price: 178.25, value: 139035, return: 16.5 },
-            { ticker: 'NVDA', name: 'NVIDIA Corp.', shares: 340, price: 495.20, value: 168368, return: 28.7 },
-            { ticker: 'META', name: 'Meta Platforms', shares: 210, price: 385.60, value: 80976, return: 12.3 }
-          ]
-        },
-        { 
-          asset: 'International Equity', 
-          value: 575000, 
-          pct: 23, 
-          return: 8.7,
-          stocks: [
-            { ticker: 'VXUS', name: 'Vanguard Total International', shares: 9500, price: 60.53, value: 575035, return: 8.7 }
-          ]
-        },
-        { 
-          asset: 'Fixed Income', 
-          value: 625000, 
-          pct: 25, 
-          return: 4.2,
-          stocks: [
-            { ticker: 'BND', name: 'Vanguard Total Bond', shares: 8200, price: 76.22, value: 624804, return: 4.2 }
-          ]
-        },
-        { 
-          asset: 'Alternatives', 
-          value: 175000, 
-          pct: 7, 
-          return: 11.8,
-          stocks: [
-            { ticker: 'VNQ', name: 'Vanguard Real Estate', shares: 1850, price: 94.59, value: 174991, return: 11.8 }
-          ]
-        },
-        { 
-          asset: 'Cash & Equivalents', 
-          value: 75000, 
-          pct: 3, 
-          return: 2.1,
-          stocks: [
-            { ticker: 'VMFXX', name: 'Vanguard Money Market', shares: 75000, price: 1.00, value: 75000, return: 2.1 }
-          ]
-        }
-      ],
-      recentActivity: [
-        { date: '2025-09-28', type: 'Buy', asset: 'VTSAX', amount: 25000 },
-        { date: '2025-09-15', type: 'Dividend', asset: 'Portfolio', amount: 3200 },
-        { date: '2025-09-01', type: 'Rebalance', asset: 'Multiple', amount: 0 }
-      ]
-    },
-    { 
-      id: 2, 
-      name: 'Chen, M', 
-      fullName: 'Michael Chen',
-      aum: 1800000, 
-      returns: { ytd: 8.7, mtd: 1.2, '1yr': 9.8, '3yr': 22.1 }, 
-      risk: 'Conservative', 
-      status: 'Active', 
-      alerts: 0,
-      email: 'mchen@email.com',
-      phone: '(555) 234-5678',
-      since: '2020',
-      holdings: [
-        { 
-          asset: 'US Large Cap Equity', 
-          value: 540000, 
-          pct: 30, 
-          return: 12.1,
-          stocks: [
-            { ticker: 'VTI', name: 'Vanguard Total Stock Market', shares: 2100, price: 257.14, value: 539994, return: 12.1 }
-          ]
-        },
-        { 
-          asset: 'International Equity', 
-          value: 360000, 
-          pct: 20, 
-          return: 7.3,
-          stocks: [
-            { ticker: 'VXUS', name: 'Vanguard Total International', shares: 5950, price: 60.50, value: 359975, return: 7.3 }
-          ]
-        },
-        { 
-          asset: 'Fixed Income', 
-          value: 720000, 
-          pct: 40, 
-          return: 4.8,
-          stocks: [
-            { ticker: 'BND', name: 'Vanguard Total Bond', shares: 9450, price: 76.19, value: 720000, return: 4.8 }
-          ]
-        },
-        { 
-          asset: 'Alternatives', 
-          value: 90000, 
-          pct: 5, 
-          return: 9.2,
-          stocks: [
-            { ticker: 'GLD', name: 'SPDR Gold Trust', shares: 480, price: 187.50, value: 90000, return: 9.2 }
-          ]
-        },
-        { 
-          asset: 'Cash & Equivalents', 
-          value: 90000, 
-          pct: 5, 
-          return: 2.3,
-          stocks: [
-            { ticker: 'VMFXX', name: 'Vanguard Money Market', shares: 90000, price: 1.00, value: 90000, return: 2.3 }
-          ]
-        }
-      ],
-      recentActivity: [
-        { date: '2025-09-25', type: 'Contribution', asset: 'Account', amount: 50000 },
-        { date: '2025-09-20', type: 'Buy', asset: 'BND', amount: 50000 },
-        { date: '2025-09-10', type: 'Dividend', asset: 'Portfolio', amount: 2100 }
-      ]
-    },
-    { 
-      id: 3, 
-      name: 'Williams, E', 
-      fullName: 'Elizabeth Williams',
-      aum: 3200000, 
-      returns: { ytd: 16.8, mtd: 3.2, '1yr': 18.9, '3yr': 35.2 }, 
-      risk: 'Aggressive', 
-      status: 'Review', 
-      alerts: 3,
-      email: 'e.williams@email.com',
-      phone: '(555) 345-6789',
-      since: '2018',
-      holdings: [
-        { 
-          asset: 'US Large Cap Equity', 
-          value: 1600000, 
-          pct: 50, 
-          return: 18.5,
-          stocks: [
-            { ticker: 'TSLA', name: 'Tesla Inc.', shares: 2800, price: 245.30, value: 686840, return: 35.2 },
-            { ticker: 'NVDA', name: 'NVIDIA Corp.', shares: 920, price: 495.20, value: 455584, return: 28.7 },
-            { ticker: 'MSFT', name: 'Microsoft Corp.', shares: 650, price: 412.30, value: 267995, return: 22.1 },
-            { ticker: 'GOOGL', name: 'Alphabet Inc.', shares: 1340, price: 142.15, value: 190481, return: 14.8 }
-          ]
-        },
-        { 
-          asset: 'International Equity', 
-          value: 800000, 
-          pct: 25, 
-          return: 12.2,
-          stocks: [
-            { ticker: 'EEM', name: 'iShares MSCI Emerging Markets', shares: 18500, price: 43.24, value: 799940, return: 12.2 }
-          ]
-        },
-        { 
-          asset: 'Fixed Income', 
-          value: 480000, 
-          pct: 15, 
-          return: 3.9,
-          stocks: [
-            { ticker: 'AGG', name: 'iShares Core US Aggregate', shares: 4650, price: 103.23, value: 480020, return: 3.9 }
-          ]
-        },
-        { 
-          asset: 'Alternatives', 
-          value: 256000, 
-          pct: 8, 
-          return: 14.7,
-          stocks: [
-            { ticker: 'VNQ', name: 'Vanguard Real Estate', shares: 2700, price: 94.81, value: 255987, return: 14.7 }
-          ]
-        },
-        { 
-          asset: 'Cash & Equivalents', 
-          value: 64000, 
-          pct: 2, 
-          return: 2.2,
-          stocks: [
-            { ticker: 'VMFXX', name: 'Vanguard Money Market', shares: 64000, price: 1.00, value: 64000, return: 2.2 }
-          ]
-        }
-      ],
-      recentActivity: [
-        { date: '2025-09-29', type: 'Alert', asset: 'Portfolio Drift', amount: 0 },
-        { date: '2025-09-22', type: 'Buy', asset: 'QQQ', amount: 75000 },
-        { date: '2025-09-12', type: 'Dividend', asset: 'Portfolio', amount: 4200 }
-      ]
-    },
-    { 
-      id: 4, 
-      name: 'Rodriguez, D', 
-      fullName: 'David Rodriguez',
-      aum: 950000, 
-      returns: { ytd: 10.2, mtd: 1.8, '1yr': 11.3, '3yr': 24.8 }, 
-      risk: 'Moderate', 
-      status: 'Active', 
-      alerts: 1,
-      email: 'drodriguez@email.com',
-      phone: '(555) 456-7890',
-      since: '2021',
-      holdings: [
-        { 
-          asset: 'US Large Cap Equity', 
-          value: 380000, 
-          pct: 40, 
-          return: 13.8,
-          stocks: [
-            { ticker: 'SPY', name: 'SPDR S&P 500 ETF', shares: 850, price: 447.06, value: 380001, return: 13.8 }
-          ]
-        },
-        { 
-          asset: 'International Equity', 
-          value: 237500, 
-          pct: 25, 
-          return: 9.1,
-          stocks: [
-            { ticker: 'VXUS', name: 'Vanguard Total International', shares: 3925, price: 60.51, value: 237501, return: 9.1 }
-          ]
-        },
-        { 
-          asset: 'Fixed Income', 
-          value: 237500, 
-          pct: 25, 
-          return: 4.5,
-          stocks: [
-            { ticker: 'BND', name: 'Vanguard Total Bond', shares: 3115, price: 76.24, value: 237488, return: 4.5 }
-          ]
-        },
-        { 
-          asset: 'Alternatives', 
-          value: 66500, 
-          pct: 7, 
-          return: 10.9,
-          stocks: [
-            { ticker: 'VNQ', name: 'Vanguard Real Estate', shares: 700, price: 95.00, value: 66500, return: 10.9 }
-          ]
-        },
-        { 
-          asset: 'Cash & Equivalents', 
-          value: 28500, 
-          pct: 3, 
-          return: 2.1,
-          stocks: [
-            { ticker: 'VMFXX', name: 'Vanguard Money Market', shares: 28500, price: 1.00, value: 28500, return: 2.1 }
-          ]
-        }
-      ],
-      recentActivity: [
-        { date: '2025-09-27', type: 'Alert', asset: 'Tech Concentration', amount: 0 },
-        { date: '2025-09-18', type: 'Contribution', asset: 'Account', amount: 10000 },
-        { date: '2025-09-08', type: 'Dividend', asset: 'Portfolio', amount: 1200 }
-      ]
-    },
-    { 
-      id: 5, 
-      name: 'Park, L', 
-      fullName: 'Lisa Park',
-      aum: 4100000, 
-      returns: { ytd: 7.3, mtd: 0.9, '1yr': 8.1, '3yr': 19.7 }, 
-      risk: 'Conservative', 
-      status: 'Inactive', 
-      alerts: 0,
-      email: 'lpark@email.com',
-      phone: '(555) 567-8901',
-      since: '2017',
-      holdings: [
-        { 
-          asset: 'US Large Cap Equity', 
-          value: 1230000, 
-          pct: 30, 
-          return: 11.5,
-          stocks: [
-            { ticker: 'VTI', name: 'Vanguard Total Stock Market', shares: 4785, price: 257.08, value: 1229998, return: 11.5 }
-          ]
-        },
-        { 
-          asset: 'International Equity', 
-          value: 820000, 
-          pct: 20, 
-          return: 6.8,
-          stocks: [
-            { ticker: 'VXUS', name: 'Vanguard Total International', shares: 13550, price: 60.52, value: 820046, return: 6.8 }
-          ]
-        },
-        { 
-          asset: 'Fixed Income', 
-          value: 1640000, 
-          pct: 40, 
-          return: 4.3,
-          stocks: [
-            { ticker: 'BND', name: 'Vanguard Total Bond', shares: 21500, price: 76.28, value: 1640020, return: 4.3 }
-          ]
-        },
-        { 
-          asset: 'Alternatives', 
-          value: 205000, 
-          pct: 5, 
-          return: 8.7,
-          stocks: [
-            { ticker: 'GLD', name: 'SPDR Gold Trust', shares: 1095, price: 187.21, value: 204995, return: 8.7 }
-          ]
-        },
-        { 
-          asset: 'Cash & Equivalents', 
-          value: 205000, 
-          pct: 5, 
-          return: 2.4,
-          stocks: [
-            { ticker: 'VMFXX', name: 'Vanguard Money Market', shares: 205000, price: 1.00, value: 205000, return: 2.4 }
-          ]
-        }
-      ],
-      recentActivity: [
-        { date: '2025-08-30', type: 'Dividend', asset: 'Portfolio', amount: 5100 },
-        { date: '2025-08-15', type: 'Rebalance', asset: 'Multiple', amount: 0 },
-        { date: '2025-08-01', type: 'Buy', asset: 'AGG', amount: 100000 }
-      ]
+// Fetch clients from database
+useEffect(() => {
+  fetchClients();
+}, []);
+
+const fetchClients = async () => {
+  setLoadingClients(true);
+  try {
+    const response = await fetch('/api/clients');
+    const data = await response.json();
+    
+    if (data.clients) {
+      // Transform database data to match expected format
+      const transformedClients = data.clients.map(client => ({
+        id: client.id,
+        name: client.name,
+        fullName: client.full_name,
+        aum: parseFloat(client.aum),
+        returns: { ytd: 0, mtd: 0, '1yr': 0, '3yr': 0 }, // Default for now
+        risk: client.risk_profile || 'Moderate',
+        status: client.status || 'Active',
+        alerts: client.alerts || 0,
+        email: client.email || '',
+        phone: client.phone || '',
+        since: client.member_since || new Date().getFullYear().toString(),
+        holdings: [], // We'll fetch these separately later
+        recentActivity: []
+      }));
+      setDbClients(transformedClients);
     }
-  ];
+  } catch (error) {
+    console.error('Error fetching clients:', error);
+  }
+  setLoadingClients(false);
+};
+
+// Use dbClients, or fallback to sample data if database is empty
+const clients = dbClients.length > 0 ? dbClients : [
+  { 
+    id: '1', 
+    name: 'Sample Client', 
+    fullName: 'Sample Client',
+    aum: 1000000, 
+    returns: { ytd: 0, mtd: 0, '1yr': 0, '3yr': 0 },
+    risk: 'Moderate', 
+    status: 'Active', 
+    alerts: 0,
+    email: 'sample@email.com',
+    phone: '(555) 000-0000',
+    since: '2024',
+    holdings: [],
+    recentActivity: []
+  }
+];
 
   const performanceData = [
     { date: 'JAN', value: 100, benchmark: 100 },
@@ -695,7 +417,15 @@ const calculateRealTimeValue = (stock) => {
 
               {/* Client List */}
               <div className="bg-gray-900 border border-gray-800 p-3">
-                <div className="text-orange-400 text-xs font-bold mb-3">CLIENT ROSTER</div>
+                <div className="flex justify-between items-center mb-3">
+  <div className="text-orange-400 text-xs font-bold">CLIENT ROSTER</div>
+  <button
+    onClick={() => setShowAddClientModal(true)}
+    className="px-3 py-1 bg-green-600 text-black font-bold text-xs hover:bg-green-500 transition-colors"
+  >
+    + ADD CLIENT
+  </button>
+</div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-xs">
                     <thead>
@@ -1343,5 +1073,92 @@ const calculateRealTimeValue = (stock) => {
     </div>
   );
 };
+{/* Add Client Modal */}
+{showAddClientModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+    <div className="bg-gray-900 border-2 border-green-500 rounded-lg max-w-2xl w-full">
+      <div className="bg-gradient-to-r from-green-900 to-green-800 p-4 flex items-center justify-between border-b-2 border-green-500">
+        <div className="text-green-300 text-xl font-bold">Add New Client</div>
+        <button 
+          onClick={() => setShowAddClientModal(false)}
+          className="px-4 py-2 bg-green-600 text-black font-bold text-xs hover:bg-green-500"
+        >
+          ✕ CLOSE
+        </button>
+      </div>
+      
+      <form onSubmit={async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const newClient = {
+          name: formData.get('name'),
+          full_name: formData.get('full_name'),
+          email: formData.get('email'),
+          phone: formData.get('phone'),
+          aum: parseFloat(formData.get('aum')),
+          risk_profile: formData.get('risk_profile'),
+          status: 'Active',
+          member_since: new Date().getFullYear().toString(),
+          alerts: 0
+        };
+        
+        try {
+          const response = await fetch('/api/clients', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newClient)
+          });
+          
+          if (response.ok) {
+            setShowAddClientModal(false);
+            fetchClients(); // Refresh the list
+          }
+        } catch (error) {
+          console.error('Error adding client:', error);
+        }
+      }} className="p-6">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="text-gray-400 text-xs block mb-1">Last Name, First Initial</label>
+            <input name="name" required className="w-full bg-gray-800 text-white p-2 text-sm border border-gray-700 rounded" placeholder="Johnson, S" />
+          </div>
+          <div>
+            <label className="text-gray-400 text-xs block mb-1">Full Name</label>
+            <input name="full_name" required className="w-full bg-gray-800 text-white p-2 text-sm border border-gray-700 rounded" placeholder="Sarah Johnson" />
+          </div>
+          <div>
+            <label className="text-gray-400 text-xs block mb-1">Email</label>
+            <input name="email" type="email" className="w-full bg-gray-800 text-white p-2 text-sm border border-gray-700 rounded" placeholder="sarah@email.com" />
+          </div>
+          <div>
+            <label className="text-gray-400 text-xs block mb-1">Phone</label>
+            <input name="phone" className="w-full bg-gray-800 text-white p-2 text-sm border border-gray-700 rounded" placeholder="(555) 123-4567" />
+          </div>
+          <div>
+            <label className="text-gray-400 text-xs block mb-1">AUM ($)</label>
+            <input name="aum" type="number" required className="w-full bg-gray-800 text-white p-2 text-sm border border-gray-700 rounded" placeholder="1000000" />
+          </div>
+          <div>
+            <label className="text-gray-400 text-xs block mb-1">Risk Profile</label>
+            <select name="risk_profile" required className="w-full bg-gray-800 text-white p-2 text-sm border border-gray-700 rounded">
+              <option>Conservative</option>
+              <option>Moderate</option>
+              <option>Aggressive</option>
+            </select>
+          </div>
+        </div>
+        
+        <div className="mt-6 flex space-x-3">
+          <button type="submit" className="flex-1 bg-green-600 text-black font-bold text-sm py-3 hover:bg-green-500">
+            CREATE CLIENT
+          </button>
+          <button type="button" onClick={() => setShowAddClientModal(false)} className="flex-1 bg-gray-700 text-white font-bold text-sm py-3 hover:bg-gray-600">
+            CANCEL
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
 
 export default BijiTerminal;
