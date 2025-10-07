@@ -1242,47 +1242,37 @@ const calculateRealTimeValue = (stock) => {
                         </tr>
                       </thead>
                       <tbody>
-                      
-                         {selectedHolding.stocks.map((stock, idx) => {
-  const liveStock = calculateRealTimeValue(stock);
-  return (
-    <tr key={idx} className="border-b border-gray-800 hover:bg-gray-800 transition-colors">
-      <td className="py-3 px-2 text-orange-400 font-bold">
-        {liveStock.ticker}
-        {liveStock.isLive && <span className="ml-1 text-green-400 text-xs">●</span>}
-      </td>
-      <td className="py-3 px-2 text-white">{liveStock.name}</td>
-      <td className="text-right py-3 px-2 text-gray-300">{liveStock.shares.toLocaleString()}</td>
-      <td className="text-right py-3 px-2">
-        <div className="flex flex-col items-end">
-          <span className="text-cyan-400 font-bold">${liveStock.currentPrice.toFixed(2)}</span>
-          {liveStock.isLive && liveStock.priceChange !== 0 && (
-            <span className={`text-xs ${liveStock.priceChange >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-              {liveStock.priceChange >= 0 ? '+' : ''}{liveStock.priceChange.toFixed(2)}
-            </span>
-          )}
-        </div>
-      </td>
-      <td className="text-right py-3 px-2 text-white font-bold">${liveStock.currentValue.toLocaleString()}</td>
-      <td className="text-right py-3 px-2 text-gray-300">
-        {((liveStock.currentValue / selectedHolding.value) * 100).toFixed(1)}%
-      </td>
-      <td className={`text-right py-3 px-2 font-bold ${liveStock.currentReturn >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-        {liveStock.currentReturn >= 0 ? '+' : ''}{liveStock.currentReturn.toFixed(1)}%
-      </td>
-    </tr>
-  );
-})}
-                            <td className="text-right py-3 px-2 text-white font-bold">${stock.value.toLocaleString()}</td>
-                            <td className="text-right py-3 px-2 text-gray-300">
-                              {((stock.value / selectedHolding.value) * 100).toFixed(1)}%
-                            </td>
-                            <td className={`text-right py-3 px-2 font-bold ${stock.return >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                              {stock.return >= 0 ? '+' : ''}{stock.return.toFixed(1)}%
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
+  {selectedHolding.stocks.map((stock, idx) => {
+    const liveStock = calculateRealTimeValue(stock);
+    return (
+      <tr key={idx} className="border-b border-gray-800 hover:bg-gray-800 transition-colors">
+        <td className="py-3 px-2 text-orange-400 font-bold">
+          {liveStock.ticker}
+          {liveStock.isLive && <span className="ml-1 text-green-400 text-xs">●</span>}
+        </td>
+        <td className="py-3 px-2 text-white">{liveStock.name}</td>
+        <td className="text-right py-3 px-2 text-gray-300">{liveStock.shares.toLocaleString()}</td>
+        <td className="text-right py-3 px-2">
+          <div className="flex flex-col items-end">
+            <span className="text-cyan-400 font-bold">${liveStock.currentPrice.toFixed(2)}</span>
+            {liveStock.isLive && liveStock.priceChange !== 0 && (
+              <span className={`text-xs ${liveStock.priceChange >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                {liveStock.priceChange >= 0 ? '+' : ''}{liveStock.priceChange.toFixed(2)}
+              </span>
+            )}
+          </div>
+        </td>
+        <td className="text-right py-3 px-2 text-white font-bold">${liveStock.currentValue.toLocaleString()}</td>
+        <td className="text-right py-3 px-2 text-gray-300">
+          {((liveStock.currentValue / selectedHolding.value) * 100).toFixed(1)}%
+        </td>
+        <td className={`text-right py-3 px-2 font-bold ${liveStock.currentReturn >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+          {liveStock.currentReturn >= 0 ? '+' : ''}{liveStock.currentReturn.toFixed(1)}%
+        </td>
+      </tr>
+    );
+  })}
+</tbody>
                       <tfoot>
                         <tr className="border-t-2 border-cyan-700 bg-gray-800">
                           <td colSpan="4" className="py-3 px-2 text-cyan-400 font-bold text-right">TOTAL:</td>
