@@ -1242,7 +1242,7 @@ const calculateRealTimeValue = (stock) => {
                         </tr>
                       </thead>
                       <tbody>
-                        {selectedHolding.stocks.map((stock, idx) => (
+                      
                          {selectedHolding.stocks.map((stock, idx) => {
   const liveStock = calculateRealTimeValue(stock);
   return (
