@@ -1071,8 +1071,8 @@ const clients = dbClients.length > 0 ? dbClients : [
         </div>
       </div>
     </div>
-  
-{/* Add Client Modal */}
+ 
+    {/* Add Client Modal */}
 {showAddClientModal && (
   <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
     <div className="bg-gray-900 border-2 border-green-500 rounded-lg max-w-2xl w-full">
@@ -1158,6 +1158,7 @@ const clients = dbClients.length > 0 ? dbClients : [
       </form>
     </div>
   </div>
-)}
+)};
+
 
 export default BijiTerminal;
