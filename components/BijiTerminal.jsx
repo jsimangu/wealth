@@ -1070,95 +1070,96 @@ const clients = dbClients.length > 0 ? dbClients : [
           <span className="text-gray-400">Updates: 5min</span>
         </div>
       </div>
-    </div>
- 
-    {/* Add Client Modal */}
-{showAddClientModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
-    <div className="bg-gray-900 border-2 border-green-500 rounded-lg max-w-2xl w-full">
-      <div className="bg-gradient-to-r from-green-900 to-green-800 p-4 flex items-center justify-between border-b-2 border-green-500">
-        <div className="text-green-300 text-xl font-bold">Add New Client</div>
-        <button 
-          onClick={() => setShowAddClientModal(false)}
-          className="px-4 py-2 bg-green-600 text-black font-bold text-xs hover:bg-green-500"
-        >
-          ✕ CLOSE
-        </button>
-      </div>
-      
-      <form onSubmit={async (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        const newClient = {
-          name: formData.get('name'),
-          full_name: formData.get('full_name'),
-          email: formData.get('email'),
-          phone: formData.get('phone'),
-          aum: parseFloat(formData.get('aum')),
-          risk_profile: formData.get('risk_profile'),
-          status: 'Active',
-          member_since: new Date().getFullYear().toString(),
-          alerts: 0
-        };
-        
-        try {
-          const response = await fetch('/api/clients', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newClient)
-          });
-          
-          if (response.ok) {
-            setShowAddClientModal(false);
-            fetchClients(); // Refresh the list
-          }
-        } catch (error) {
-          console.error('Error adding client:', error);
-        }
-      }} className="p-6">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="text-gray-400 text-xs block mb-1">Last Name, First Initial</label>
-            <input name="name" required className="w-full bg-gray-800 text-white p-2 text-sm border border-gray-700 rounded" placeholder="Johnson, S" />
-          </div>
-          <div>
-            <label className="text-gray-400 text-xs block mb-1">Full Name</label>
-            <input name="full_name" required className="w-full bg-gray-800 text-white p-2 text-sm border border-gray-700 rounded" placeholder="Sarah Johnson" />
-          </div>
-          <div>
-            <label className="text-gray-400 text-xs block mb-1">Email</label>
-            <input name="email" type="email" className="w-full bg-gray-800 text-white p-2 text-sm border border-gray-700 rounded" placeholder="sarah@email.com" />
-          </div>
-          <div>
-            <label className="text-gray-400 text-xs block mb-1">Phone</label>
-            <input name="phone" className="w-full bg-gray-800 text-white p-2 text-sm border border-gray-700 rounded" placeholder="(555) 123-4567" />
-          </div>
-          <div>
-            <label className="text-gray-400 text-xs block mb-1">AUM ($)</label>
-            <input name="aum" type="number" required className="w-full bg-gray-800 text-white p-2 text-sm border border-gray-700 rounded" placeholder="1000000" />
-          </div>
-          <div>
-            <label className="text-gray-400 text-xs block mb-1">Risk Profile</label>
-            <select name="risk_profile" required className="w-full bg-gray-800 text-white p-2 text-sm border border-gray-700 rounded">
-              <option>Conservative</option>
-              <option>Moderate</option>
-              <option>Aggressive</option>
-            </select>
-          </div>
-        </div>
-        
-        <div className="mt-6 flex space-x-3">
-          <button type="submit" className="flex-1 bg-green-600 text-black font-bold text-sm py-3 hover:bg-green-500">
-            CREATE CLIENT
-          </button>
-          <button type="button" onClick={() => setShowAddClientModal(false)} className="flex-1 bg-gray-700 text-white font-bold text-sm py-3 hover:bg-gray-600">
-            CANCEL
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-)};
 
+      {/* Add Client Modal */}
+      {showAddClientModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-900 border-2 border-green-500 rounded-lg max-w-2xl w-full">
+            <div className="bg-gradient-to-r from-green-900 to-green-800 p-4 flex items-center justify-between border-b-2 border-green-500">
+              <div className="text-green-300 text-xl font-bold">Add New Client</div>
+              <button 
+                onClick={() => setShowAddClientModal(false)}
+                className="px-4 py-2 bg-green-600 text-black font-bold text-xs hover:bg-green-500"
+              >
+                ✕ CLOSE
+              </button>
+            </div>
+            
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target);
+              const newClient = {
+                name: formData.get('name'),
+                full_name: formData.get('full_name'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                aum: parseFloat(formData.get('aum')),
+                risk_profile: formData.get('risk_profile'),
+                status: 'Active',
+                member_since: new Date().getFullYear().toString(),
+                alerts: 0
+              };
+              
+              try {
+                const response = await fetch('/api/clients', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(newClient)
+                });
+                
+                if (response.ok) {
+                  setShowAddClientModal(false);
+                  fetchClients();
+                }
+              } catch (error) {
+                console.error('Error adding client:', error);
+              }
+            }} className="p-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-gray-400 text-xs block mb-1">Last Name, First Initial</label>
+                  <input name="name" required className="w-full bg-gray-800 text-white p-2 text-sm border border-gray-700 rounded" placeholder="Johnson, S" />
+                </div>
+                <div>
+                  <label className="text-gray-400 text-xs block mb-1">Full Name</label>
+                  <input name="full_name" required className="w-full bg-gray-800 text-white p-2 text-sm border border-gray-700 rounded" placeholder="Sarah Johnson" />
+                </div>
+                <div>
+                  <label className="text-gray-400 text-xs block mb-1">Email</label>
+                  <input name="email" type="email" className="w-full bg-gray-800 text-white p-2 text-sm border border-gray-700 rounded" placeholder="sarah@email.com" />
+                </div>
+                <div>
+                  <label className="text-gray-400 text-xs block mb-1">Phone</label>
+                  <input name="phone" className="w-full bg-gray-800 text-white p-2 text-sm border border-gray-700 rounded" placeholder="(555) 123-4567" />
+                </div>
+                <div>
+                  <label className="text-gray-400 text-xs block mb-1">AUM ($)</label>
+                  <input name="aum" type="number" required className="w-full bg-gray-800 text-white p-2 text-sm border border-gray-700 rounded" placeholder="1000000" />
+                </div>
+                <div>
+                  <label className="text-gray-400 text-xs block mb-1">Risk Profile</label>
+                  <select name="risk_profile" required className="w-full bg-gray-800 text-white p-2 text-sm border border-gray-700 rounded">
+                    <option>Conservative</option>
+                    <option>Moderate</option>
+                    <option>Aggressive</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div className="mt-6 flex space-x-3">
+                <button type="submit" className="flex-1 bg-green-600 text-black font-bold text-sm py-3 hover:bg-green-500">
+                  CREATE CLIENT
+                </button>
+                <button type="button" onClick={() => setShowAddClientModal(false)} className="flex-1 bg-gray-700 text-white font-bold text-sm py-3 hover:bg-gray-600">
+                  CANCEL
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default BijiTerminal;
